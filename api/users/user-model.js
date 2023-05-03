@@ -1,15 +1,31 @@
-const db = require('../../data/db-config.js')
+const db = require("../../data/db-config.js");
 
 module.exports = {
   findPosts,
   find,
   findById,
   add,
-  remove
-}
+  remove,
+};
 
-function findPosts(user_id) {
+async function findPosts(user_id) {
+  const rows = await db("posts as p")
+    .select("p.id as post_id", "contents", "username")
+    .join("users as u", "p.user_id", "=", "u.id")
+    .where("u.id", user_id);
+  console.log(rows);
+  return rows;
   /*
+
+  select
+    p.id as post_id,
+    contents,
+    username
+from posts as p
+join users as u
+    on p.user_id = u.id
+    where u.id = 3
+
     Implement so it resolves this structure:
 
     [
@@ -24,7 +40,7 @@ function findPosts(user_id) {
 }
 
 function find() {
-  return db('users')
+  return db("users");
   /*
     Improve so it resolves this structure:
 
@@ -45,7 +61,7 @@ function find() {
 }
 
 function findById(id) {
-  return db('users').where({ id }).first()
+  return db("users").where({ id }).first();
   /*
     Improve so it resolves this structure:
 
@@ -64,14 +80,15 @@ function findById(id) {
 }
 
 function add(user) {
-  return db('users')
+  return db("users")
     .insert(user)
-    .then(([id]) => { // eslint-disable-line
-      return findById(id)
-    })
+    .then(([id]) => {
+      // eslint-disable-line
+      return findById(id);
+    });
 }
 
 function remove(id) {
   // returns removed count
-  return db('users').where({ id }).del()
+  return db("users").where({ id }).del();
 }
